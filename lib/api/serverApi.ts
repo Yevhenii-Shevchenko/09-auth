@@ -1,5 +1,6 @@
-import axios from "axios";
+import type { AxiosResponse } from "axios";
 
+import { api } from "./api";
 import type { Note, TAGS } from "@/types/note";
 import type { User } from "@/types/user";
 import type { FetchNotesResponse } from "./clientApi";
@@ -27,14 +28,13 @@ function getServerApiBaseUrl() {
   return `${origin}/api`;
 }
 
-function createServerApi(cookies: string) {
-  return axios.create({
+function getServerRequestConfig(cookies: string) {
+  return {
     baseURL: getServerApiBaseUrl(),
-    withCredentials: true,
     headers: {
       Cookie: cookies,
     },
-  });
+  };
 }
 
 export async function fetchNotes(
@@ -43,8 +43,8 @@ export async function fetchNotes(
   search?: string,
   tag?: TAGS,
 ): Promise<FetchNotesResponse> {
-  const serverApi = createServerApi(options.cookies);
-  const { data } = await serverApi.get<FetchNotesResponse>("/notes", {
+  const { data } = await api.get<FetchNotesResponse>("/notes", {
+    ...getServerRequestConfig(options.cookies),
     params: {
       page,
       perPage: 12,
@@ -60,21 +60,26 @@ export async function fetchNoteById(
   id: string,
   options: ServerRequestOptions,
 ): Promise<Note> {
-  const serverApi = createServerApi(options.cookies);
-  const { data } = await serverApi.get<Note>(`/notes/${id}`);
+  const { data } = await api.get<Note>(
+    `/notes/${id}`,
+    getServerRequestConfig(options.cookies),
+  );
   return data;
 }
 
 export async function checkSession(
   options: ServerRequestOptions,
-): Promise<boolean> {
-  const serverApi = createServerApi(options.cookies);
-  const { data } = await serverApi.get<{ success: boolean }>("/auth/session");
-  return data.success;
+): Promise<AxiosResponse<{ success: boolean }>> {
+  return api.get<{ success: boolean }>(
+    "/auth/session",
+    getServerRequestConfig(options.cookies),
+  );
 }
 
 export async function getMe(options: ServerRequestOptions): Promise<User> {
-  const serverApi = createServerApi(options.cookies);
-  const { data } = await serverApi.get<User>("/users/me");
+  const { data } = await api.get<User>(
+    "/users/me",
+    getServerRequestConfig(options.cookies),
+  );
   return data;
 }

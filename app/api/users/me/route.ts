@@ -16,34 +16,21 @@ export async function GET() {
         Cookie: cookieStore.toString(),
       },
     });
-    return NextResponse.json(res.data, {
-      status: res.status,
-      headers: {
-        "Cache-Control": "no-store, no-cache, must-revalidate",
-      },
-    });
+    return NextResponse.json(res.data, { status: res.status });
   } catch (error) {
     if (isAxiosError(error)) {
       logErrorResponse(error.response?.data);
       return NextResponse.json(
         { error: error.message, response: error.response?.data },
         {
-          status: error.status,
-          headers: {
-            "Cache-Control": "no-store, no-cache, must-revalidate",
-          },
+          status: error.response?.status,
         },
       );
     }
     logErrorResponse({ message: (error as Error).message });
     return NextResponse.json(
       { error: "Internal Server Error" },
-      {
-        status: 500,
-        headers: {
-          "Cache-Control": "no-store, no-cache, must-revalidate",
-        },
-      },
+      { status: 500 },
     );
   }
 }
@@ -64,7 +51,7 @@ export async function PATCH(request: Request) {
       logErrorResponse(error.response?.data);
       return NextResponse.json(
         { error: error.message, response: error.response?.data },
-        { status: error.status },
+        { status: error.response?.status },
       );
     }
     logErrorResponse({ message: (error as Error).message });

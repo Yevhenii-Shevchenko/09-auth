@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Profile() {
-  const cookieStore = await cookies();
+  const cookieStore = cookies();
   const user = await getMe({ cookies: cookieStore.toString() }).catch(() =>
     redirect("/sign-in"),
   );
