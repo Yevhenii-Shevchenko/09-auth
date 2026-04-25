@@ -23,7 +23,7 @@ export async function GET() {
       return NextResponse.json(
         { error: error.message, response: error.response?.data },
         {
-          status: error.response?.status,
+          status: error.status,
         },
       );
     }
@@ -51,7 +51,7 @@ export async function PATCH(request: Request) {
       logErrorResponse(error.response?.data);
       return NextResponse.json(
         { error: error.message, response: error.response?.data },
-        { status: error.response?.status },
+        { status: error.status },
       );
     }
     logErrorResponse({ message: (error as Error).message });
