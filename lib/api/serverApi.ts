@@ -8,9 +8,28 @@ interface ServerRequestOptions {
   cookies: string;
 }
 
+function getServerApiBaseUrl() {
+  const publicApiOrigin = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
+  const projectProductionOrigin = process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : undefined;
+  const deploymentOrigin = process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : undefined;
+
+  const origin =
+    publicApiOrigin || projectProductionOrigin || deploymentOrigin;
+
+  if (!origin) {
+    throw new Error("Missing API origin for server requests");
+  }
+
+  return `${origin}/api`;
+}
+
 function createServerApi(cookies: string) {
   return axios.create({
-    baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api`,
+    baseURL: getServerApiBaseUrl(),
     withCredentials: true,
     headers: {
       Cookie: cookies,

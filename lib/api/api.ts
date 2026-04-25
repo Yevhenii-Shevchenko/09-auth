@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const baseURL = `${process.env.NEXT_PUBLIC_API_URL}/api`;
+const apiOrigin = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ?? "";
+const baseURL = apiOrigin ? `${apiOrigin}/api` : "/api";
 
 export const api = axios.create({
   baseURL,
