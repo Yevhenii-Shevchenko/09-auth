@@ -21,6 +21,7 @@ const SignIn = () => {
     mutationFn: login,
     onSuccess: (user) => {
       setUser(user);
+      router.refresh();
       router.push("/profile");
     },
   });

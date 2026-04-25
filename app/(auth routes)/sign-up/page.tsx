@@ -24,6 +24,7 @@ const SignUp = () => {
     mutationFn: register,
     onSuccess: (user) => {
       setUser(user);
+      router.refresh();
       router.push("/profile");
     },
   });
