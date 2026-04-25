@@ -3,8 +3,8 @@ import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import type { TAGS } from "@/types/note";
-import createNote from "@/app/notes/action/create/createNote";
-import type { DraftNote } from "@/lib/api";
+import createNote from "@/app/(private routes)/notes/action/create/createNote";
+import type { DraftNote } from "@/lib/api/clientApi";
 import { useNoteStore } from "@/lib/store/noteStore";
 
 import css from "./NoteForm.module.css";
@@ -17,8 +17,12 @@ function NoteForm() {
 
   const { mutate, isPending } = useMutation<unknown, Error, DraftNote>({
     mutationFn: createNote,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notes"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["notes"] });
+      await queryClient.refetchQueries({
+        queryKey: ["notes"],
+        type: "all",
+      });
       clearDraft();
       router.back();
     },

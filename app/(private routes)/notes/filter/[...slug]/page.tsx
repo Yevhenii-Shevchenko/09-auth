@@ -4,8 +4,9 @@ import {
   QueryClient,
 } from "@tanstack/react-query";
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 
-import noteService from "@/lib/api";
+import { fetchNotes } from "@/lib/api/serverApi";
 import NotesClient from "./Notes.client";
 import { TAGS } from "@/types/note";
 
@@ -50,6 +51,7 @@ export async function generateMetadata({
 
 export default async function FilterPage({ params }: FilterPageProps) {
   const { slug } = await params;
+  const cookieStore = await cookies();
 
   const tagValue = slug?.[0];
   const activeTag = !tagValue || tagValue === "all" ? undefined : tagValue;
@@ -59,7 +61,8 @@ export default async function FilterPage({ params }: FilterPageProps) {
   await queryClient.prefetchQuery({
     queryKey: ["notes", 1, "", activeTag],
     queryFn: () =>
-      noteService.fetchNotes(
+      fetchNotes(
+        { cookies: cookieStore.toString() },
         1,
         "",
         activeTag && activeTag !== "all" ? (activeTag as TAGS) : undefined,

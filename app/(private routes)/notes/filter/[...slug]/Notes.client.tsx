@@ -7,7 +7,7 @@ import Link from "next/link";
 
 import css from "./NotesPage.module.css";
 
-import noteService from "@/lib/api";
+import { fetchNotes } from "@/lib/api/clientApi";
 import SearchBox from "@/components/SearchBox/SearchBox";
 import Pagination from "@/components/Pagination/Pagination";
 import NoteList from "@/components/NoteList/NoteList";
@@ -29,7 +29,7 @@ function NotesClient({ activeTag }: NotesClientProps) {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["notes", page, search, activeTag],
     queryFn: () =>
-      noteService.fetchNotes(
+      fetchNotes(
         page,
         search,
         activeTag && activeTag !== "all" ? (activeTag as TAGS) : undefined,

@@ -4,8 +4,9 @@ import {
   QueryClient,
 } from "@tanstack/react-query";
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 
-import noteService from "@/lib/api";
+import { fetchNoteById } from "@/lib/api/serverApi";
 
 import NoteDetailsClient from "./NoteDetails.client";
 
@@ -17,7 +18,8 @@ export async function generateMetadata({
   params,
 }: NoteDetailsPageProps): Promise<Metadata> {
   const { id } = await params;
-  const note = await noteService.fetchNoteById(id);
+  const cookieStore = await cookies();
+  const note = await fetchNoteById(id, { cookies: cookieStore.toString() });
 
   return {
     title: `${note.title} | NoteHub`,
@@ -43,12 +45,13 @@ export default async function NoteDetailsPage({
   params,
 }: NoteDetailsPageProps) {
   const { id } = await params;
+  const cookieStore = await cookies();
 
   const queryClient = new QueryClient();
 
-  queryClient.prefetchQuery({
+  await queryClient.prefetchQuery({
     queryKey: ["note", id],
-    queryFn: () => noteService.fetchNoteById(id),
+    queryFn: () => fetchNoteById(id, { cookies: cookieStore.toString() }),
   });
 
   return (

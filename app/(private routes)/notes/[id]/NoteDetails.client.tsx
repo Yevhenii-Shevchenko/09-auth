@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
-import noteService from "@/lib/api";
+import { fetchNoteById } from "@/lib/api/clientApi";
 import Modal from "@/components/Modal/Modal";
 import NotePreview from "@/components/NotePreview/NotePreview";
 
@@ -20,8 +20,7 @@ function NoteDetailsClient({ id }: NoteDetailsClientProps) {
     error,
   } = useQuery({
     queryKey: ["note", id],
-    queryFn: () => noteService.fetchNoteById(id),
-    refetchOnMount: false,
+    queryFn: () => fetchNoteById(id),
   });
 
   if (isLoading) return null;
